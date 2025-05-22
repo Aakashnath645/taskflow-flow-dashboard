@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { motion, HTMLMotionProps } from "framer-motion";
+import { motion } from "framer-motion";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -73,34 +73,42 @@ const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
     variants,
     ...props 
   }, ref) => {
+    const buttonClasses = cn(buttonVariants({ variant, size, className }));
+    
     if (asChild) {
       // When asChild is true, use Slot without any motion properties
       return (
         <Slot
-          className={cn(buttonVariants({ variant, size, className }))}
-          ref={ref}
+          className={buttonClasses}
+          ref={ref as any}
           {...props}
         />
       );
     }
     
     // When asChild is false, use motion.button with animation properties
+    // Use type assertion to avoid event handler conflicts
+    const motionProps = {
+      whileHover,
+      whileTap,
+      transition,
+      initial,
+      animate,
+      exit,
+      variants,
+    };
+
     return (
       <motion.button
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={buttonClasses}
         ref={ref}
-        whileHover={whileHover}
-        whileTap={whileTap}
-        transition={transition}
-        initial={initial}
-        animate={animate}
-        exit={exit}
-        variants={variants}
+        {...motionProps}
         {...props as any} // Type assertion to avoid event handler conflicts
       />
     );
   }
 );
+
 AnimatedButton.displayName = "AnimatedButton";
 
 export { AnimatedButton, buttonVariants };

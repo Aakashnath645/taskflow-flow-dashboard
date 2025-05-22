@@ -29,13 +29,18 @@ interface UseGsapAnimationProps {
     markers?: boolean;
     toggleActions?: string;
   };
+  dependencies?: any[];
 }
 
+/**
+ * @deprecated Use useGsapReact instead for better React integration and automatic cleanup
+ */
 export const useGsapAnimation = ({
   trigger = true,
   animation,
   scrollTrigger = false,
   scrollTriggerOptions,
+  dependencies = [],
 }: UseGsapAnimationProps) => {
   const elementRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
@@ -70,6 +75,7 @@ export const useGsapAnimation = ({
     animation(element, timeline);
 
     return () => {
+      // Clean up GSAP animations and ScrollTrigger instances
       timeline.kill();
       timelineRef.current = null;
       
@@ -78,7 +84,8 @@ export const useGsapAnimation = ({
         scrollTriggerRef.current = null;
       }
     };
-  }, [trigger, animation, scrollTrigger, scrollTriggerOptions]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trigger, scrollTrigger, ...dependencies]);
 
   return { elementRef, timeline: timelineRef.current };
 };
@@ -96,7 +103,7 @@ export const useCountAnimation = (
     const element = countRef.current;
     let startValue = 0;
     
-    gsap.to({}, {
+    const tween = gsap.to({}, {
       duration,
       onUpdate: function() {
         const progress = gsap.getProperty(this, "progress") as number;
@@ -104,6 +111,9 @@ export const useCountAnimation = (
       }
     });
     
+    return () => {
+      tween.kill();
+    };
   }, [endValue, duration, trigger]);
   
   return countRef;

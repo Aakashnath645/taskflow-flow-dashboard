@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Index from "./pages/Index";
+import LandingPage from "./pages/LandingPage";
 import Projects from "./pages/Projects";
 import Tasks from "./pages/Tasks";
 import Team from "./pages/Team";
@@ -22,7 +23,8 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<AnimatedPage><Index /></AnimatedPage>} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/dashboard" element={<AnimatedPage><Index /></AnimatedPage>} />
         <Route path="/projects" element={<AnimatedPage><Projects /></AnimatedPage>} />
         <Route path="/tasks" element={<AnimatedPage><Tasks /></AnimatedPage>} />
         <Route path="/team" element={<AnimatedPage><Team /></AnimatedPage>} />
