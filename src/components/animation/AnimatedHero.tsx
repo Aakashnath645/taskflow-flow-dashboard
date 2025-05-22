@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useRef } from "react";
 import { useGsapReact } from "@/hooks/useGsapReact";
 import { AnimatedButton } from "@/components/ui/animated-button";
 import { motion } from "framer-motion";
@@ -19,8 +19,11 @@ const AnimatedHero: React.FC<AnimatedHeroProps> = ({
   ctaText,
   onCtaClick,
 }) => {
+  // Create a specific ref for the hero section
+  const heroRef = useRef<HTMLDivElement>(null);
+  
   // Use our GSAP hook for animations
-  const { scopeRef } = useGsapReact({
+  useGsapReact({
     animation: (gsap, element) => {
       if (!element) return;
 
@@ -80,7 +83,7 @@ const AnimatedHero: React.FC<AnimatedHeroProps> = ({
 
   return (
     <div 
-      ref={scopeRef} 
+      ref={heroRef}
       className="relative min-h-[90vh] flex flex-col items-center justify-center text-center px-6 overflow-hidden"
     >
       {/* Decorative floating elements */}

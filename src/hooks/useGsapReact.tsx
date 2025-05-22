@@ -24,7 +24,10 @@ export const useGsapReact = ({
   revertOnUpdate = true,
   animation,
 }: UseGsapAnimationProps) => {
+  // Use HTMLDivElement specifically for compatibility with div-based components
   const internalScopeRef = useRef<HTMLDivElement>(null);
+  
+  // Use the provided scope or the internal one
   const containerRef = scope || internalScopeRef;
 
   useGSAP(() => {

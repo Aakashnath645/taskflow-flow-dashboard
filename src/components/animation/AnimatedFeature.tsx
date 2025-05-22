@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useRef } from "react";
 import { useGsapReact } from "@/hooks/useGsapReact";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
@@ -11,7 +11,11 @@ interface AnimatedFeatureProps {
 }
 
 const AnimatedFeature = ({ icon, title, description, index }: AnimatedFeatureProps) => {
-  const { scopeRef } = useGsapReact({
+  // Create a specific ref for this component
+  const featureRef = useRef<HTMLDivElement>(null);
+  
+  // Use our GSAP hook for animations with the specific ref
+  useGsapReact({
     animation: (gsap, element) => {
       if (!element) return;
       
@@ -32,7 +36,7 @@ const AnimatedFeature = ({ icon, title, description, index }: AnimatedFeaturePro
 
   return (
     <Card 
-      ref={scopeRef} 
+      ref={featureRef}
       className="h-full border border-border/50 bg-background/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/50 hover:shadow-md"
     >
       <CardHeader>
