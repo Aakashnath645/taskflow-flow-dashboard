@@ -6,6 +6,17 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
+// Extending the Timeline type to add our custom property safely
+declare module "gsap" {
+  interface core {
+    Timeline: TimelineType;
+  }
+  
+  interface TimelineType {
+    scrollTriggerInstance?: ScrollTrigger;
+  }
+}
+
 interface UseGsapAnimationProps {
   trigger?: boolean;
   animation: (element: HTMLElement, timeline: gsap.core.Timeline) => void;
@@ -28,6 +39,7 @@ export const useGsapAnimation = ({
 }: UseGsapAnimationProps) => {
   const elementRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
 
   useEffect(() => {
     if (!elementRef.current) return;
@@ -38,7 +50,7 @@ export const useGsapAnimation = ({
     timelineRef.current = timeline;
     
     if (scrollTrigger && scrollTriggerOptions) {
-      const scrollTriggerInstance = ScrollTrigger.create({
+      scrollTriggerRef.current = ScrollTrigger.create({
         trigger: scrollTriggerOptions.trigger || element,
         start: scrollTriggerOptions.start || "top bottom",
         end: scrollTriggerOptions.end || "bottom top",
@@ -48,8 +60,8 @@ export const useGsapAnimation = ({
         animation: timeline,
       });
       
-      // Store the scrollTrigger instance for cleanup
-      timeline.scrollTrigger = scrollTriggerInstance;
+      // Store reference to the scrollTrigger instance
+      timeline.scrollTriggerInstance = scrollTriggerRef.current;
     }
     
     animation(element, timeline);
@@ -58,8 +70,9 @@ export const useGsapAnimation = ({
       timeline.kill();
       timelineRef.current = null;
       
-      if (timeline.scrollTrigger) {
-        timeline.scrollTrigger.kill();
+      if (scrollTriggerRef.current) {
+        scrollTriggerRef.current.kill();
+        scrollTriggerRef.current = null;
       }
     };
   }, [trigger, animation, scrollTrigger, scrollTriggerOptions]);

@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { motion } from "framer-motion";
+import { motion, HTMLMotionProps } from "framer-motion";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +40,13 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
-const AnimatedButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
+// Create a new interface that extends HTMLMotionProps for the motion component
+type AnimatedButtonProps = Omit<ButtonProps, keyof HTMLMotionProps<"button">> & 
+  HTMLMotionProps<"button"> & {
+    asChild?: boolean;
+  };
+
+const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : motion.button;
     
