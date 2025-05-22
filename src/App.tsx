@@ -11,17 +11,20 @@ import Projects from "./pages/Projects";
 import Tasks from "./pages/Tasks";
 import Team from "./pages/Team";
 import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import AnimatedPage from "./components/animation/AnimatedPage";
+import { usePerformance } from "./hooks/usePerformance";
 
 const queryClient = new QueryClient();
 
 // AnimatedRoutes component to handle route transitions
 const AnimatedRoutes = () => {
   const location = useLocation();
+  const { shouldAnimateFully } = usePerformance();
   
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode={shouldAnimateFully ? "wait" : "sync"}>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<AnimatedPage><Index /></AnimatedPage>} />
@@ -29,7 +32,7 @@ const AnimatedRoutes = () => {
         <Route path="/tasks" element={<AnimatedPage><Tasks /></AnimatedPage>} />
         <Route path="/team" element={<AnimatedPage><Team /></AnimatedPage>} />
         <Route path="/settings" element={<AnimatedPage><Settings /></AnimatedPage>} />
-        <Route path="/profile" element={<AnimatedPage><Settings /></AnimatedPage>} />
+        <Route path="/profile" element={<AnimatedPage><Profile /></AnimatedPage>} />
         <Route path="*" element={<AnimatedPage><NotFound /></AnimatedPage>} />
       </Routes>
     </AnimatePresence>
