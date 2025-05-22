@@ -40,12 +40,15 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
-// Define motion button props
-interface AnimatedButtonProps extends ButtonProps {
+// Define animation properties separately
+interface AnimationProps {
   whileHover?: any;
   whileTap?: any;
   transition?: any;
 }
+
+// Combine ButtonProps and animation props but avoid DOM event handler conflicts
+interface AnimatedButtonProps extends ButtonProps, AnimationProps {}
 
 const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
   ({ className, variant, size, asChild = false, whileHover, whileTap, transition, ...props }, ref) => {
@@ -61,6 +64,7 @@ const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
     }
     
     // Use motion.button with animation properties when asChild is false
+    // We need to type cast props to avoid TypeScript errors with event handlers
     return (
       <motion.button
         className={cn(buttonVariants({ variant, size, className }))}
@@ -72,7 +76,7 @@ const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
           stiffness: 400,
           damping: 17
         }}
-        {...props}
+        {...props as any} // Type assertion to avoid event handler conflicts
       />
     );
   }
