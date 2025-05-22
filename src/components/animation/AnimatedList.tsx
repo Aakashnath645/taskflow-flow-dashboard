@@ -32,7 +32,7 @@ const AnimatedList = ({ children, className, staggerDelay = 0.05 }: AnimatedList
       animate="visible"
       variants={containerVariants}
     >
-      {React.Children.map(children, (child, index) => (
+      {children.map((child, index) => (
         <motion.div key={index} variants={itemVariants}>
           {child}
         </motion.div>

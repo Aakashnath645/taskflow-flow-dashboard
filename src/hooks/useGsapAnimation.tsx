@@ -38,7 +38,7 @@ export const useGsapAnimation = ({
     timelineRef.current = timeline;
     
     if (scrollTrigger && scrollTriggerOptions) {
-      timeline.scrollTrigger = ScrollTrigger.create({
+      const scrollTriggerInstance = ScrollTrigger.create({
         trigger: scrollTriggerOptions.trigger || element,
         start: scrollTriggerOptions.start || "top bottom",
         end: scrollTriggerOptions.end || "bottom top",
@@ -47,6 +47,9 @@ export const useGsapAnimation = ({
         toggleActions: scrollTriggerOptions.toggleActions || "play none none none",
         animation: timeline,
       });
+      
+      // Store the scrollTrigger instance for cleanup
+      timeline.scrollTrigger = scrollTriggerInstance;
     }
     
     animation(element, timeline);
@@ -77,12 +80,11 @@ export const useCountAnimation = (
     const element = countRef.current;
     let startValue = 0;
     
-    gsap.to(element, {
-      innerHTML: endValue,
+    gsap.to({}, {
       duration,
-      snap: { innerHTML: 1 },
-      onUpdate: () => {
-        element.innerHTML = Math.floor(startValue + (endValue - startValue) * gsap.getProperty(element, "progress")).toString();
+      onUpdate: function() {
+        const progress = gsap.getProperty(this, "progress") as number;
+        element.innerHTML = Math.floor(startValue + (endValue - startValue) * progress).toString();
       }
     });
     
