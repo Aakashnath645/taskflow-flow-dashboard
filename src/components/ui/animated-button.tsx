@@ -40,23 +40,34 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
-// Create a new interface that extends HTMLMotionProps for the motion component
-type AnimatedButtonProps = Omit<ButtonProps, keyof HTMLMotionProps<"button">> & 
-  HTMLMotionProps<"button"> & {
-    asChild?: boolean;
-  };
+// Define motion button props
+interface AnimatedButtonProps extends ButtonProps {
+  whileHover?: any;
+  whileTap?: any;
+  transition?: any;
+}
 
 const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : motion.button;
+  ({ className, variant, size, asChild = false, whileHover, whileTap, transition, ...props }, ref) => {
+    if (asChild) {
+      // Return Slot without motion properties when asChild is true
+      return (
+        <Slot
+          className={cn(buttonVariants({ variant, size, className }))}
+          ref={ref}
+          {...props}
+        />
+      );
+    }
     
+    // Use motion.button with animation properties when asChild is false
     return (
-      <Comp
+      <motion.button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        transition={{
+        whileHover={whileHover || { scale: 1.03 }}
+        whileTap={whileTap || { scale: 0.97 }}
+        transition={transition || {
           type: "spring",
           stiffness: 400,
           damping: 17
