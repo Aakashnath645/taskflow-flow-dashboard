@@ -1,13 +1,15 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChartBar, ListCheck, FolderOpen, Users, ArrowRight } from 'lucide-react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import StatCard from '@/components/ui/stat-card';
+import AnimatedStatCard from '@/components/ui/animated-stat-card';
 import TaskCard from '@/components/ui/task-card';
 import ProjectCard from '@/components/ui/project-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { AnimatedButton } from '@/components/ui/animated-button';
+import AnimatedList from '@/components/animation/AnimatedList';
+import { gsap } from 'gsap';
 
 // Mock data
 const recentTasks = [
@@ -79,89 +81,127 @@ const activities = [
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const headerRef = useRef<HTMLHeadingElement>(null);
+  const activityListRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    // Header animation
+    if (headerRef.current) {
+      gsap.fromTo(
+        headerRef.current, 
+        { opacity: 0, y: -20 }, 
+        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+      );
+    }
+    
+    // Activity list animation
+    if (activityListRef.current) {
+      const activities = activityListRef.current.children;
+      gsap.from(activities, {
+        opacity: 0,
+        y: 15,
+        stagger: 0.1,
+        duration: 0.4,
+        delay: 0.5,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: activityListRef.current,
+          start: "top bottom-=100",
+        }
+      });
+    }
+  }, []);
 
   return (
     <DashboardLayout>
-      <div className="animate-fade-in">
-        <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      <div>
+        <h1 ref={headerRef} className="text-2xl font-bold mb-6">Dashboard</h1>
       
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <StatCard
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <AnimatedStatCard
             title="Total Projects"
-            value="12"
+            value={12}
             icon={<FolderOpen />}
             trend={{ value: 8, isPositive: true }}
             description="vs last month"
+            delay={0.1}
           />
-          <StatCard
+          <AnimatedStatCard
             title="Pending Tasks"
-            value="24"
+            value={24}
             icon={<ListCheck />}
             trend={{ value: 12, isPositive: false }}
             description="vs last month"
+            delay={0.2}
           />
-          <StatCard
+          <AnimatedStatCard
             title="Team Members"
-            value="8"
+            value={8}
             icon={<Users />}
             trend={{ value: 2, isPositive: true }}
             description="vs last month"
+            delay={0.3}
           />
-          <StatCard
+          <AnimatedStatCard
             title="Completion Rate"
             value="76%"
             icon={<ChartBar />}
             trend={{ value: 5, isPositive: true }}
             description="vs last month"
+            delay={0.4}
           />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <Card className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-lg">Recent Projects</CardTitle>
-                <Button onClick={() => navigate('/projects')} variant="ghost" className="text-sm flex items-center">
+                <AnimatedButton onClick={() => navigate('/projects')} variant="ghost" className="text-sm flex items-center">
                   View all <ArrowRight className="ml-1 h-4 w-4" />
-                </Button>
+                </AnimatedButton>
               </CardHeader>
               <CardContent className="grid gap-4">
-                {projects.map(project => (
-                  <ProjectCard
-                    key={project.id}
-                    {...project}
-                    onClick={(id) => navigate(`/projects/${id}`)}
-                  />
-                ))}
+                <AnimatedList staggerDelay={0.1}>
+                  {projects.map(project => (
+                    <ProjectCard
+                      key={project.id}
+                      {...project}
+                      onClick={(id) => navigate(`/projects/${id}`)}
+                    />
+                  ))}
+                </AnimatedList>
               </CardContent>
             </Card>
             
-            <Card className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-lg">Recent Tasks</CardTitle>
-                <Button onClick={() => navigate('/tasks')} variant="ghost" className="text-sm flex items-center">
+                <AnimatedButton onClick={() => navigate('/tasks')} variant="ghost" className="text-sm flex items-center">
                   View all <ArrowRight className="ml-1 h-4 w-4" />
-                </Button>
+                </AnimatedButton>
               </CardHeader>
               <CardContent className="grid gap-4">
-                {recentTasks.map(task => (
-                  <TaskCard
-                    key={task.id}
-                    {...task}
-                    onCardClick={(id) => navigate(`/tasks/${id}`)}
-                  />
-                ))}
+                <AnimatedList staggerDelay={0.1}>
+                  {recentTasks.map(task => (
+                    <TaskCard
+                      key={task.id}
+                      {...task}
+                      onCardClick={(id) => navigate(`/tasks/${id}`)}
+                    />
+                  ))}
+                </AnimatedList>
               </CardContent>
             </Card>
           </div>
           
           <div>
-            <Card className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Recent Activity</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div ref={activityListRef} className="space-y-4">
                   {activities.map((activity) => (
                     <div key={activity.id} className="flex items-start">
                       <div className="mr-4">
