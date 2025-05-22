@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Calendar, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Avatar } from '@/components/ui/avatar';
+import { motion } from 'framer-motion';
 
 export type TaskPriority = 'low' | 'medium' | 'high';
 
@@ -52,50 +53,71 @@ const TaskCard = ({
   };
 
   return (
-    <Card 
-      onClick={handleClick} 
-      className="p-4 cursor-pointer hover:shadow-md transition-shadow"
+    <motion.div
+      whileHover={{ 
+        scale: 1.02,
+        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+      }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 400, 
+        damping: 17 
+      }}
     >
-      <div className="flex items-start justify-between mb-2">
-        <div className="font-medium">{title}</div>
-        <div className={cn("text-xs px-2 py-1 rounded-full font-medium", statusColor[status])}>
-          {status.replace('-', ' ')}
-        </div>
-      </div>
-      
-      {description && (
-        <div className="text-sm text-muted-foreground mb-3 line-clamp-2">
-          {description}
-        </div>
-      )}
-      
-      <div className="flex items-center justify-between mt-4">
-        <div className="flex items-center space-x-2">
-          {dueDate && (
-            <div className="flex items-center text-xs text-muted-foreground">
-              <Calendar className="w-3 h-3 mr-1" />
-              {dueDate}
-            </div>
-          )}
+      <Card 
+        onClick={handleClick} 
+        className="p-4 cursor-pointer transition-all"
+      >
+        <div className="flex items-start justify-between mb-2">
+          <div className="font-medium">{title}</div>
+          <div className={cn("text-xs px-2 py-1 rounded-full font-medium", statusColor[status])}>
+            {status.replace('-', ' ')}
+          </div>
         </div>
         
-        <div className="flex items-center space-x-2">
-          <div className={cn("text-xs px-2 py-0.5 rounded-full", priorityColor[priority])}>
-            {priority}
+        {description && (
+          <div className="text-sm text-muted-foreground mb-3 line-clamp-2">
+            {description}
+          </div>
+        )}
+        
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center space-x-2">
+            {dueDate && (
+              <div className="flex items-center text-xs text-muted-foreground">
+                <Calendar className="w-3 h-3 mr-1" />
+                {dueDate}
+              </div>
+            )}
           </div>
           
-          {assignee && (
-            <div className="flex items-center">
-              <Avatar className="w-6 h-6">
-                <div className="bg-taskflow-primary text-white flex items-center justify-center w-full h-full text-xs font-medium">
-                  {assignee.name.split(' ').map(name => name[0]).join('')}
-                </div>
-              </Avatar>
-            </div>
-          )}
+          <div className="flex items-center space-x-2">
+            <motion.div 
+              className={cn("text-xs px-2 py-0.5 rounded-full", priorityColor[priority])}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {priority}
+            </motion.div>
+            
+            {assignee && (
+              <motion.div 
+                className="flex items-center"
+                whileHover={{ scale: 1.15, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <Avatar className="w-6 h-6">
+                  <div className="bg-taskflow-primary text-white flex items-center justify-center w-full h-full text-xs font-medium">
+                    {assignee.name.split(' ').map(name => name[0]).join('')}
+                  </div>
+                </Avatar>
+              </motion.div>
+            )}
+          </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </motion.div>
   );
 };
 

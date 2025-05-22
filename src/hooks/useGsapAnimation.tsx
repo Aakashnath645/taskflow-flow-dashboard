@@ -50,7 +50,8 @@ export const useGsapAnimation = ({
     timelineRef.current = timeline;
     
     if (scrollTrigger && scrollTriggerOptions) {
-      scrollTriggerRef.current = ScrollTrigger.create({
+      // Create ScrollTrigger instance and store the reference
+      const st = ScrollTrigger.create({
         trigger: scrollTriggerOptions.trigger || element,
         start: scrollTriggerOptions.start || "top bottom",
         end: scrollTriggerOptions.end || "bottom top",
@@ -60,8 +61,10 @@ export const useGsapAnimation = ({
         animation: timeline,
       });
       
-      // Store reference to the scrollTrigger instance
-      timeline.scrollTriggerInstance = scrollTriggerRef.current;
+      scrollTriggerRef.current = st;
+      
+      // Store reference to the scrollTrigger instance using our custom property
+      timeline.scrollTriggerInstance = st;
     }
     
     animation(element, timeline);

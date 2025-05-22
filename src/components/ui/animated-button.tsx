@@ -45,15 +45,36 @@ interface AnimationProps {
   whileHover?: any;
   whileTap?: any;
   transition?: any;
+  initial?: any;
+  animate?: any;
+  exit?: any;
+  variants?: any;
 }
 
 // Combine ButtonProps and animation props but avoid DOM event handler conflicts
 interface AnimatedButtonProps extends ButtonProps, AnimationProps {}
 
 const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
-  ({ className, variant, size, asChild = false, whileHover, whileTap, transition, ...props }, ref) => {
+  ({ 
+    className, 
+    variant, 
+    size, 
+    asChild = false, 
+    whileHover = { scale: 1.03 },
+    whileTap = { scale: 0.97 },
+    transition = {
+      type: "spring",
+      stiffness: 400,
+      damping: 17
+    },
+    initial,
+    animate,
+    exit,
+    variants,
+    ...props 
+  }, ref) => {
     if (asChild) {
-      // Return Slot without motion properties when asChild is true
+      // When asChild is true, use Slot without any motion properties
       return (
         <Slot
           className={cn(buttonVariants({ variant, size, className }))}
@@ -63,19 +84,18 @@ const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButtonProps>(
       );
     }
     
-    // Use motion.button with animation properties when asChild is false
-    // We need to type cast props to avoid TypeScript errors with event handlers
+    // When asChild is false, use motion.button with animation properties
     return (
       <motion.button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        whileHover={whileHover || { scale: 1.03 }}
-        whileTap={whileTap || { scale: 0.97 }}
-        transition={transition || {
-          type: "spring",
-          stiffness: 400,
-          damping: 17
-        }}
+        whileHover={whileHover}
+        whileTap={whileTap}
+        transition={transition}
+        initial={initial}
+        animate={animate}
+        exit={exit}
+        variants={variants}
         {...props as any} // Type assertion to avoid event handler conflicts
       />
     );
